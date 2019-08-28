@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package tumblerrpc;
+
+service VersionService {
+	rpc Version (VersionRequest) returns (VersionResponse);
+}
+
+message VersionRequest {}
+message VersionResponse {
+	string version_string = 1;
+	uint32 major = 2;
+	uint32 minor = 3;
+	uint32 patch = 4;
+	string prerelease = 5;
+	string build_metadata = 6;
+}
+
+service TumblerService {
+	// Queries
+	rpc Ping (PingRequest) returns (PingResponse);
+
+	// Exchange between Tumbler and payees
+	rpc SetupEscrow (SetupEscrowRequest) returns (SetupEscrowResponse);
+	rpc GetPuzzlePromises (GetPuzzlePromisesRequest) returns (GetPuzzlePromisesResponse);
+	rpc FinalizeEscrow (FinalizeEscrowRequest) returns (FinalizeEscrowResponse);
+
+	// Exchange between Tumbler and payers
+	rpc GetSolutionPromises (GetSolutionPromisesRequest) returns (GetSolutionPromisesResponse);
+	rpc ValidateSolutions (ValidateSolutionsRequest) returns (ValidateSolutionsResponse);
+	rpc PaymentOffer (PaymentOfferRequest) returns (PaymentOfferResponse);
+}
+
+message PingRequest {}
+message PingResponse {}
+
+message SetupEscrowRequest {
+	string address = 1;
+	string public_key = 2;
+	int64 amount = 3;
+}
+
+message SetupEscrowResponse {
+	bytes cookie = 1;
+	int32 epoch = 2;
+	int32 lock_time = 3;
+	string address = 4;
+	string public_key = 5;
+	bytes escrow_script = 6;
+	bytes escrow_transaction = 7;
+}
+
+message GetPuzzlePromisesRequest {
+	bytes cookie = 1;
+	bytes fake_set_hash = 2;
+	bytes real_set_hash = 3;
+	repeated bytes transaction_hashes = 4;
+}
+
+message GetPuzzlePromisesResponse {
+	bytes public_key = 1;
+	bytes puzzle_key = 2;
+	repeated bytes puzzles = 3;
+	repeated bytes promises = 4;
+}
+
+message FinalizeEscrowRequest {
+	bytes cookie = 1;
+	bytes salt = 2;
+	bytes fake_tx_list = 3;
+	bytes real_tx_list = 4;
+	repeated bytes random_pads = 5;
+}
+
+message FinalizeEscrowResponse {
+	bytes escrow_hash = 1;
+	repeated bytes secrets = 2;
+	repeated bytes quotients = 3;
+}
+
+message GetSolutionPromisesRequest {
+	string address = 1;
+	int32 epoch = 2;
+	repeated bytes puzzles = 3;
+}
+
+message GetSolutionPromisesResponse {
+	bytes cookie = 1;
+	repeated bytes promises = 2;
+	repeated bytes key_hashes = 3;
+}
+
+message ValidateSolutionsRequest {
+	bytes cookie = 1;
+	bytes fake_puzzle_list = 2;
+	repeated bytes random_factors = 3;
+}
+
+message ValidateSolutionsResponse {
+	repeated bytes secrets = 1;
+}
+
+message PaymentOfferRequest {
+	bytes cookie = 1;
+	int64 amount = 2;
+	string public_key = 3;
+	bytes escrow_hash = 4;
+	bytes escrow_script = 5;
+	bytes escrow_transaction = 6;
+	bytes puzzle = 7;
+	bytes real_puzzle_list = 8;
+	repeated bytes random_factors = 9;
+}
+
+message PaymentOfferResponse {}
