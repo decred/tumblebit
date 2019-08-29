@@ -10,7 +10,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/decred/dcrd/dcrutil"
+	"github.com/decred/dcrd/dcrutil/v3"
 	"github.com/decred/tumblebit/contract"
 	"github.com/decred/tumblebit/wallet"
 )
@@ -36,7 +36,7 @@ func (tb *Tumbler) NewEscrow(ctx context.Context, w *wallet.Wallet) (*PaymentPuz
 
 	recvAddr, recvPubKey, err := w.GetExtAddress(ctx)
 	if err != nil {
-		fmt.Errorf("Failed to obtain an address for escrow: %v", err)
+		return nil, fmt.Errorf("Failed to obtain an address for escrow: %v", err)
 	}
 
 	escrow, err := tb.SetupEscrow(ctx, &EscrowRequest{

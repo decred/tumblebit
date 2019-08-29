@@ -14,11 +14,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-
 	"github.com/decred/tumblebit/netparams"
 	"github.com/decred/tumblebit/wallet"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 var activeNet = &netparams.MainNetParams

@@ -13,8 +13,9 @@ import (
 	"math/big"
 	mrand "math/rand"
 
-	"github.com/decred/dcrd/chaincfg/chainec"
 	"github.com/decred/dcrd/chaincfg/chainhash"
+	"github.com/decred/dcrd/dcrec/secp256k1/v3"
+	"github.com/decred/dcrd/dcrec/secp256k1/v3/ecdsa"
 	"github.com/decred/tumblebit/puzzle"
 	"github.com/decred/tumblebit/shuffle"
 )
@@ -259,7 +260,7 @@ func validatePuzzlePromiseResponse(c *puzzlePromiseChallenge, r *puzzlePromiseRe
 
 	for i, j := range fakeTxList {
 		if !puzzle.ValidatePuzzle(&pkey, r.puzzles[j], r.secrets[i]) {
-			errors.New("obtained secrets didn't verify")
+			return errors.New("obtained secrets didn't verify")
 		}
 		sig, err := puzzle.RevealSolution(r.promises[j], r.secrets[i])
 		if err != nil {
@@ -276,7 +277,7 @@ func validatePuzzlePromiseResponse(c *puzzlePromiseChallenge, r *puzzlePromiseRe
 		realPuzzles[i] = r.puzzles[idx]
 	}
 	if !puzzle.VerifyQuotients(&pkey, r.quotients, realPuzzles) {
-		errors.New("failed to verify quotients")
+		return errors.New("failed to verify quotients")
 	}
 
 	return nil
@@ -324,15 +325,15 @@ out:
 }
 
 func verifySignature(sigBytes []byte, hash []byte, publicKey []byte) error {
-	pubkey, err := chainec.Secp256k1.ParsePubKey(publicKey)
+	pubkey, err := secp256k1.ParsePubKey(publicKey)
 	if err != nil {
 		return err
 	}
-	sig, err := chainec.Secp256k1.ParseSignature(sigBytes)
+	sig, err := ecdsa.ParseDERSignature(sigBytes)
 	if err != nil {
 		return err
 	}
-	if !chainec.Secp256k1.Verify(pubkey, hash, sig.GetR(), sig.GetS()) {
+	if !sig.Verify(hash, pubkey) {
 		return errors.New("failed to verify the signature")
 	}
 	return nil

@@ -20,12 +20,11 @@ import (
 	"context"
 	"sync/atomic"
 
+	pb "github.com/decred/tumblebit/rpc/tumblerrpc"
+	"github.com/decred/tumblebit/tumbler"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	pb "github.com/decred/tumblebit/rpc/tumblerrpc"
-	"github.com/decred/tumblebit/tumbler"
 )
 
 // Public API version constants

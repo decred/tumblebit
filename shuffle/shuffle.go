@@ -31,7 +31,7 @@ func Shuffle(random io.Reader, n int, swap func(i, j int)) *ShuffleMap {
 	// Fisher-Yates shuffle: https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
 	for i := n - 1; i > 0; i-- {
 		j := int(uniformRandom31(random, int32(i+1)))
-		swap(i, int(j))
+		swap(i, j)
 		idx[i], idx[j] = idx[j], idx[i]
 		perm[idx[i]] = i
 	}

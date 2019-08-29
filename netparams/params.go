@@ -5,7 +5,7 @@
 
 package netparams
 
-import "github.com/decred/dcrd/chaincfg"
+import "github.com/decred/dcrd/chaincfg/v3"
 
 // Params is used to group parameters for various networks such as the main
 // network and test networks.
@@ -16,17 +16,17 @@ type Params struct {
 }
 
 // MainNetParams contains parameters specific running tumblebit and
-// dcrd on the main network (wire.MainNet).
+// dcrd on the main network.
 var MainNetParams = Params{
-	Params:            &chaincfg.MainNetParams,
+	Params:            chaincfg.MainNetParams(),
 	WalletClientPort:  "9111",
 	TumblerServerPort: "9191",
 }
 
-// TestNet2Params contains parameters specific running tumblebit and
-// dcrd on the test network (version 2) (wire.TestNet2).
-var TestNet2Params = Params{
-	Params:            &chaincfg.TestNet2Params,
+// TestNet3Params contains parameters specific running tumblebit and
+// dcrd on the test network.
+var TestNet3Params = Params{
+	Params:            chaincfg.TestNet3Params(),
 	WalletClientPort:  "19111",
 	TumblerServerPort: "19191",
 }
@@ -34,7 +34,7 @@ var TestNet2Params = Params{
 // SimNetParams contains parameters specific to the simulation test network
 // (wire.SimNet).
 var SimNetParams = Params{
-	Params:            &chaincfg.SimNetParams,
+	Params:            chaincfg.SimNetParams(),
 	WalletClientPort:  "19558",
 	TumblerServerPort: "19598",
 }

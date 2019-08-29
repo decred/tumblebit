@@ -20,7 +20,6 @@ import (
 
 	"github.com/decred/dcrd/certgen"
 	"github.com/decred/tumblebit/rpc/rpcserver"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/peer"

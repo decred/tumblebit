@@ -6,7 +6,7 @@
 package contract
 
 import (
-	"github.com/decred/dcrd/txscript"
+	"github.com/decred/dcrd/txscript/v3"
 	"github.com/decred/dcrd/wire"
 )
 
