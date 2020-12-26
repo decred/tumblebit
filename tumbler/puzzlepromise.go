@@ -65,7 +65,7 @@ func (s *Session) SetupEscrow(ctx context.Context, er *EscrowRequest) (*EscrowOf
 		Epoch:        epoch,
 		LockTime:     epoch + s.tb.epochDuration,
 		Address:      s.contract.SenderAddrStr,
-		PublicKey:    s.contract.SenderAddr.EncodeAddress(),
+		PublicKey:    s.contract.SenderAddr.Address(),
 		EscrowScript: s.contract.EscrowScript,
 		EscrowTx:     s.contract.EscrowBytes,
 	}, nil

@@ -10,9 +10,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/decred/dcrd/chaincfg"
-	"github.com/decred/dcrd/chaincfg/chainec"
-	"github.com/decred/dcrd/dcrutil"
+	"github.com/decred/dcrd/chaincfg/v3"
+	"github.com/decred/dcrd/dcrec"
+	"github.com/decred/dcrd/dcrutil/v3"
 	"github.com/decred/dcrd/wire"
 )
 
@@ -121,23 +121,19 @@ func (c *Contract) SetAddress(t addressRole, a, pk string) error {
 		panic("unknown address role")
 	}
 
-	addr, err := dcrutil.DecodeAddress(pk)
+	addr, err := dcrutil.DecodeAddress(pk, c.ChainParams)
 	if err != nil {
 		return fmt.Errorf("failed to decode %s pubkey: %v",
 			addressName[t], err)
 	}
-	if !addr.IsForNet(c.ChainParams) {
-		return fmt.Errorf("address %v is not intended for use on %v", a,
-			c.ChainParams.Name)
-	}
 
-	check, err := dcrutil.DecodeAddress(a)
+	check, err := dcrutil.DecodeAddress(a, c.ChainParams)
 	if err != nil {
 		return fmt.Errorf("failed to decode %s address: %v",
 			addressName[t], err)
 	}
 
-	if addr.EncodeAddress() != check.EncodeAddress() {
+	if addr.Address() != check.Address() {
 		return errors.New("address and public key don't match")
 	}
 
@@ -193,7 +189,7 @@ func checkAddressType(addr dcrutil.Address, allowed addressType) bool {
 	case *dcrutil.AddressSecpPubKey:
 		found = PayToPubKey
 	case *dcrutil.AddressPubKeyHash:
-		if a.DSA(a.Net()) == chainec.ECTypeSecp256k1 {
+		if a.DSA() == dcrec.STEcdsaSecp256k1 {
 			found = PayToPubKeyHash
 		}
 	case *dcrutil.AddressSecSchnorrPubKey:
@@ -203,16 +199,16 @@ func checkAddressType(addr dcrutil.Address, allowed addressType) bool {
 	default:
 		return false
 	}
-	if found&allowed != 0 {
-		return true
-	}
-	return false
+	return found&allowed != 0
+}
+
+func (c *Contract) ParseRedeemTransaction(redeemTx *wire.MsgTx) error {
+	// TODO
+	return errors.New("NOT IMPLEMENTED")
 }
 
 func (c *Contract) String() string {
-	var str string
-
-	str = "Contract{ "
+	str := "Contract{ "
 	if len(c.EscrowScript) > 0 {
 		str += "Escrow{ "
 		if len(c.SenderAddrStr) > 0 {

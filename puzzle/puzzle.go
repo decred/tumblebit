@@ -15,8 +15,8 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/decred/dcrd/crypto/ripemd160"
 	"golang.org/x/crypto/blake2s"
-	"golang.org/x/crypto/ripemd160"
 )
 
 func NewPuzzlePromise(pk *PuzzleKey, sig []byte) ([]byte, []byte, []byte, error) {

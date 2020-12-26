@@ -9,9 +9,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/decred/dcrd/chaincfg"
+	"github.com/decred/dcrd/chaincfg/v3"
 	pb "github.com/decred/tumblebit/rpc/tumblerrpc"
-
 	"google.golang.org/grpc"
 )
 

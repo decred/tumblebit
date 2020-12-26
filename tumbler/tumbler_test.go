@@ -12,8 +12,9 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/decred/dcrd/chaincfg/chainec"
 	"github.com/decred/dcrd/chaincfg/chainhash"
+	"github.com/decred/dcrd/dcrec/secp256k1/v3"
+	"github.com/decred/dcrd/dcrec/secp256k1/v3/ecdsa"
 	"github.com/decred/tumblebit/puzzle"
 	"github.com/decred/tumblebit/shuffle"
 )
@@ -321,32 +322,29 @@ func testPuzzleSolving(t *testing.T, s *Session, pkey *puzzle.PuzzlePubKey,
 	return puzzleSolutions[0]
 }
 
-var ecpriv chainec.PrivateKey
-var ecpub chainec.PublicKey
+var ecpriv *secp256k1.PrivateKey
+var ecpub *secp256k1.PublicKey
 
 func init() {
-	priv, _, _, err := chainec.Secp256k1.GenerateKey(rand.Reader)
+	priv, err := secp256k1.GeneratePrivateKey()
 	if err != nil {
-		panic("failed to generate private key")
+		panic(err)
 	}
-	ecpriv, ecpub = chainec.Secp256k1.PrivKeyFromBytes(priv)
+	ecpriv = priv
+	ecpub = ecpriv.PubKey()
 }
 
 func secpSign(hash []byte) ([]byte, error) {
-	r, s, err := chainec.Secp256k1.Sign(ecpriv, hash)
-	if err != nil {
-		return nil, err
-	}
-	sig := chainec.Secp256k1.NewSignature(r, s)
+	sig := ecdsa.Sign(ecpriv, hash)
 	return sig.Serialize(), nil
 }
 
 func secpVerify(sigBytes []byte, hash []byte) (bool, error) {
-	sig, err := chainec.Secp256k1.ParseSignature(sigBytes)
+	sig, err := ecdsa.ParseDERSignature(sigBytes)
 	if err != nil {
 		return false, err
 	}
-	if !chainec.Secp256k1.Verify(ecpub, hash, sig.GetR(), sig.GetS()) {
+	if !sig.Verify(hash, ecpub) {
 		return false, errors.New("failed to verify the signature")
 	}
 	return true, nil
@@ -361,5 +359,5 @@ func signChallengeHashes(hashes [][]byte) ([][]byte, []byte, error) {
 			return nil, nil, err
 		}
 	}
-	return signatures, ecpub.Serialize(), nil
+	return signatures, ecpub.SerializeCompressed(), nil
 }
